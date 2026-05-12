@@ -120,7 +120,6 @@ body {
 
 	border-bottom: solid var(--chord-pline-box-height) var(--white-color);
 
-
 	transform: translateY(
 		calc(
 			var(--pitchlevel, 0) 
@@ -134,10 +133,10 @@ body {
 .pitchline.ghost-note {
 	display: flex;
 	width: var(--chord-pline-box-width);
-	height: var(--chord-pline-box-height);
+	height: 0;
 	z-index: 2;
 
-	border-top: dotted var(--chord-pline-box-height) var(--white-color);
+	border-bottom: dotted var(--chord-pline-box-height) var(--white-color);
 
 	transform: translateY(
 		calc(
