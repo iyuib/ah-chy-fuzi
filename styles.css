@@ -1,0 +1,305 @@
+* {
+	box-sizing: border-box;
+}
+
+:root {
+	/* variables */
+	--chord-diagram-scale: 0.2;
+	--chord-line-thickness: 11px;
+	--chord-line-length: 345px;
+	--chord-base-width: 60px;
+	--chord-base-gap: 35px;
+	--octave-gap: 581px;
+
+	--octave-height: 591px;
+	--chy-height: 351px;
+	--ly-height: 198px;
+	--my-height: 485px;
+	--zy-height: 859px;
+	--gnay-height: 1000px;
+	--gnay-offset: 239px;
+
+	--score-line-width: 11px;
+	--harmonic-gapline-thickness: 34px;
+
+	/* color palette */
+	--white-color: #ffffff;
+	--chy-color: #ff0000;
+	--ly-color: #00ff00;
+	--my-color: #8000ff;
+	--zy-color: #ffbf00;
+	--gnay-color: #aaaa00;
+
+	/* calculations */
+	--chord-area-width: calc(var(--chord-line-length) + ((var(--chord-base-width) + var(--chord-base-gap)) * 2));
+	--chord-pline-box-width: calc(var(--chord-line-length) * var(--chord-diagram-scale));
+	--chord-pline-box-height: calc(var(--chord-line-thickness) * var(--chord-diagram-scale));
+	--chord-harmonic-pitchlevel: calc(var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale) * -1);
+	--right-side-width: calc(-20px * var(--chord-diagram-scale));
+}
+
+body {
+  background-color: #676681;
+  color: #ffffff;
+}
+
+.score {
+	--thickness: calc(var(--chord-pline-box-height) / 1);
+
+	background: repeating-linear-gradient(
+    0deg,
+    #ffffff80,
+    #ffffff80 var(--thickness), /* First stripe color and height */
+    #676681 var(--thickness), /* Second stripe starts at the same spot */
+    #676681 calc(var(--octave-height) * var(--chord-diagram-scale))  /* Second stripe height */
+    );
+	background-position: calc(480px / 2);
+	
+	width: 100%;
+	height: 480px;
+	border: 1px solid white; /* placeholder border */
+}
+
+.chordarea {
+	display: grid;
+	grid-template-areas: "overlay"; 
+	place-items: center;
+
+	bottom: 0;
+	left: 50%; /* placeholder */
+	
+	width: calc(var(--chord-area-width) * var(--chord-diagram-scale));
+	height: 480px;
+	position: relative;
+	overflow: visible;
+}
+
+@font-face {
+	font-family:  'Qoz';
+	src: url(assets/Qoz-ascii-Regular.otf) format('opentype');
+}
+
+.infobox {
+	font-family: 'Qoz', monospace;
+	position: absolute;
+	display: flex;
+    justify-content: center;
+    align-items: center; 
+	width: fit-content;
+    height: calc(150px * var(--chord-diagram-scale));
+    background-color: #ffffff;
+	color: #626262;
+	padding: 20px 18px;
+	transform: translateY(
+		calc(
+			var(--pitchlevel, 0) 
+			* var(--octave-gap) 
+			* var(--chord-diagram-scale) 
+			* -1
+		)
+	);
+    border-radius: calc(50px * var(--chord-diagram-scale)); 
+}
+
+.pitchline, 
+.harmonic-octave, 
+.harmonic-chy, 
+.harmonic-ly, 
+.harmonic-my,
+.harmonic-zy,
+.harmonic-gnay {
+	grid-area: overlay; 
+	pointer-events: none; 
+}
+
+.pitchline {
+	display: flex;
+	width: var(--chord-pline-box-width);
+	height: 0;
+	z-index: 2;
+
+	border-bottom: solid var(--chord-pline-box-height) var(--white-color);
+
+
+	transform: translateY(
+		calc(
+			var(--pitchlevel, 0) 
+			* var(--octave-gap) 
+			* var(--chord-diagram-scale) 
+			* -1
+		)
+	);
+}
+
+.pitchline.ghost-note {
+	display: flex;
+	width: var(--chord-pline-box-width);
+	height: var(--chord-pline-box-height);
+	z-index: 2;
+
+	border-top: dotted var(--chord-pline-box-height) var(--white-color);
+
+	transform: translateY(
+		calc(
+			var(--pitchlevel, 0) 
+			* var(--octave-gap) 
+			* var(--chord-diagram-scale) 
+			* -1
+		)
+	);
+}
+
+/*  HARMONICS 
+	ratios to note:
+	chy = 3/2
+	ly = 5/4
+	my = 7/4
+	zy = 11/4 (11/8 + octave)
+	gnay = 13/4 (13/8 + octave)
+
+	TRIGGER WARNING: the CSS code you will see is
+	more atrocious than the taste of oranges or
+	orange juice when you eat it right after
+	brushing your teeth.
+*/
+
+.harmonic-octave {
+	display: flex;
+	width: 0;
+	height: calc(var(--octave-height) * var(--chord-diagram-scale));
+	z-index: 1;
+
+	border-left: solid calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) #cdcdcd;
+	/* #cdcdcd is placeholder */
+
+	margin-top: calc(-2px * var(--chord-diagram-scale)); /* offset */
+	
+	transform: translate(
+		calc(
+			(-101px * var(--chord-diagram-scale) / 2)
+		), 
+		calc(
+			((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+			- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+		)
+	); 
+} 
+
+.harmonic-chy {
+	display: flex;
+	width: 0;
+	height: calc(var(--chy-height) * var(--chord-diagram-scale));
+	z-index: 3;	
+
+	border-left: solid calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) var(--chy-color);
+	
+	margin-top: calc(-2px * var(--chord-diagram-scale)); /* offset */
+	--pitchcalc: calc(var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale) * -1);
+
+	transform: translate(
+		calc(
+			(var(--chord-pline-box-width) / -2) + (15px * var(--chord-diagram-scale))
+		), 
+		calc(
+			((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+			- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+		)
+	); 
+} 
+
+.harmonic-ly {
+	display: flex;
+	width: 0;
+	height: calc(var(--ly-height) * var(--chord-diagram-scale));
+	z-index: 3;
+
+	border-right: solid calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) var(--ly-color);
+	
+
+	transform: 
+	translate(
+		calc(
+			(var(--chord-pline-box-width) / 2) + (var(--right-side-width) * 1.75)
+			+ (15px * var(--chord-diagram-scale))
+		), 
+		calc(
+			((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+			- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+		)
+	); 
+} 
+
+.harmonic-my {
+	display: flex;
+	width: 0;
+	height: calc(var(--my-height) * var(--chord-diagram-scale));
+	z-index: 3;
+
+	margin-top: calc(2px * var(--chord-diagram-scale)); /* offset */
+
+	border-right: solid calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) var(--my-color);
+
+	transform-origin: bottom center;
+
+	transform: 
+		translate(
+			calc(
+				(var(--chord-pline-box-width) / -2)
+			), 
+			calc(
+				((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+				- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+			)
+		)
+		skew(atan2(var(--chord-pline-box-width), calc(var(--my-height) * var(--chord-diagram-scale) * -1)))
+	; 
+} 
+
+.harmonic-zy {
+	display: flex;
+	width: 0;
+	height: calc(var(--zy-height) * var(--chord-diagram-scale));
+	z-index: 3;
+
+	margin-left: calc(-50px * var(--chord-diagram-scale));
+
+	border-left: solid calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) var(--zy-color);
+
+	transform-origin: bottom center;
+
+	transform: 
+		translate(
+			calc(
+				(var(--chord-pline-box-width) / -2) + (360px * var(--chord-diagram-scale))
+			), 
+			calc(
+				((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+				- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+			)
+		)
+		skew(atan2(var(--chord-pline-box-width), calc(var(--zy-height) * var(--chord-diagram-scale))))
+	; 
+} 
+.harmonic-gnay {
+	display: flex;
+	width: var(--gnay-curve);
+	height: calc(var(--gnay-height) * var(--chord-diagram-scale));
+	z-index: 3;
+
+	/* 6D is dotted because i cant make a ( shape :( */
+	border-left: dotted calc(var(--harmonic-gapline-thickness) * var(--chord-diagram-scale)) var(--gnay-color);
+
+	/* margin-left: calc(var(--gnay-offset) * var(--chord-diagram-scale) * -1); */
+
+	transform: 
+		translate(
+			calc(
+				(var(--chord-pline-box-width) / -2)
+			), 
+			calc(
+				((var(--chord-pline-box-height) / (var(--dir) * 2))) - (var(--dir) * 50%)
+				- var(--pitchlevel, 0) * var(--octave-gap) * var(--chord-diagram-scale)
+			)
+		)
+	; 
+} 
