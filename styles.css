@@ -43,8 +43,18 @@ body {
   color: #ffffff;
 }
 
+.score-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* gap: 60px; Space so the slanted harmonic lines don't overlap tracks */
+    margin-bottom: 20px;
+}
+
 .score {
+	position: relative;
+	flex-shrink: 0;
 	--thickness: calc(var(--chord-pline-box-height) / 1);
+	overflow: visible;
 
 	background: repeating-linear-gradient(
     0deg,
